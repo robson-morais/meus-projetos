@@ -1,18 +1,16 @@
 package musicfy;
 
-public class Track {
+public class Track implements Comparable<Track> {
     private String name;
     private String artist;
-    private String lenght;
 
-    public Track(String name, String artist, String lenght) {
+    public Track(String name, String artist) {
         this.name = name;
         this.artist = artist;
-        this.lenght = lenght;
     }
 
     public Track() {
-        this("","new Artist()","");
+        this("", "");
     }
 
     public String getName() {
@@ -31,16 +29,17 @@ public class Track {
         this.artist = artist;
     }
 
-    public String getLenght() {
-        return lenght;
+    @Override
+    public String toString() {
+        return"'"+this.name+"'"+ " by " + this.artist;
     }
 
-    public void setLenght(String lenght) {
-        this.lenght = lenght;
+    public String playback(){
+        return"===========\nPlaying '"+this.name+"'\nby "+this.artist+"\n==========";
     }
 
     @Override
-    public String toString() {
-        return "Título: "+this.name+"\nArtista: "+this.artist+"\nDuração: "+this.lenght+"\n \n";
+    public int compareTo(Track o) {
+        return 0;
     }
 }

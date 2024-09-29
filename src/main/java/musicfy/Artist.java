@@ -34,9 +34,6 @@ public class Artist {
 
     @Override
     public String toString() {
-        return "Artist{" +
-                "nome='" + nome + '\'' +
-                ", albums=" + albums +
-                '}';
+        return this.nome+" Albums: {"+this.albums+"}";
     }
 }
