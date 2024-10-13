@@ -1,2 +1,2 @@
-# meus-projetos
-Projetos pessoais utilizando novas skills.
+# Projetos simples:
+- Biblioteca de músicas;
