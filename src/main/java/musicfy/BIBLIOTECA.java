@@ -55,13 +55,17 @@ public class BIBLIOTECA {
         int quant = this.playlists.size();
         String [] playlistsf = new String[quant];
         for (int e=0; e<quant; e++){
-            playlistsf[e] = this.playlists.get(e).getNome();
+            playlistsf[e] = this.playlists.get(e).getINDEX()+". "+this.playlists.get(e).getNome();
         }
-        return playlistsf; //TODO
+        return playlistsf; //TODO*/
     }
 
     public void addPlaylist(Playlist playlist){
         this.playlists.add(playlist);
+    }
+
+    public List<Playlist> getPlaylists(){
+        return this.playlists;
     }
 
 

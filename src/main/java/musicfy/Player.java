@@ -3,12 +3,10 @@ package musicfy;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Player {
     public static void main(String[] args) {
-
-        Dados dados = new Dados();
-        dados.criarplaylist();
 
         List<Album> albums = new ArrayList<>();
         String zachbryan = "Zach Bryan";
@@ -71,25 +69,18 @@ public class Player {
         Playlist allsongs = new Playlist();
         allsongs.setNome("Liked songs");
         for (Album alb: albums){
-            for (int j=0; j<alb.getTracks().size(); j++){
-                allsongs.addSong(alb.getTracks().get(j));
+            for (Track tt: alb.getTracks()){
+                allsongs.addSong(tt);
             }
         }
 
         Playlist zach = new Playlist();
         zach.setNome("Best of Zach Bryan");
-        for (Album ab: albums){
-            for (int y=0; y<ab.getTracks().size(); y++){
-                if (ab.getTracks().get(y).getArtist().equalsIgnoreCase("zach bryan")){
-                    zach.addSong(ab.getTracks().get(y));
-                }
-            }
-        }
 
-        // Fazendo um Array com os nomes das músicas para mostrar no menu:
-        String [] allSongsNames = new String[allsongs.getQuant()];
-        for (int c=0; c<allsongs.getQuant();c++){
-            allSongsNames[c] = allsongs.getTracks().get(c).toString();
+        for (Track ttrack: allsongs.getTracks()){
+            if(ttrack.getArtist().equalsIgnoreCase(zachbryan)){
+                zach.addSong(ttrack);
+            }
         }
 
         //Criando playlists:
@@ -100,7 +91,6 @@ public class Player {
 
         String [] artistas = new String[]{mel,zachbryan,"JOY DIVISION"};
         BIBLIOTECA biblioteca = new BIBLIOTECA(albums,playlistsByUser,artistas,"robson m.");
-        String [] playliststoshow = biblioteca.showPlaylists();
 
         boolean exit = false;
         while (!exit){
@@ -116,7 +106,7 @@ public class Player {
                                 JOptionPane.showMessageDialog(null, allsongs.searchSongToString(searchThis));
                                 break;
                             case 2:
-                                JOptionPane.showMessageDialog(null, allSongsNames);
+                                JOptionPane.showMessageDialog(null, allsongs.getTracks());
                                 break;
                             case 3:
                                 exit2 = true;
@@ -146,7 +136,7 @@ public class Player {
                     JOptionPane.showMessageDialog(null,artistas);
                     break;
                 case 4:
-                    JOptionPane.showMessageDialog(null,playliststoshow); //biblioteca.toString()
+                    JOptionPane.showInputDialog(null, biblioteca.showPlaylists());
                     break;
                 case 5:
                     exit = true;

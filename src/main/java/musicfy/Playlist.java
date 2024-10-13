@@ -7,6 +7,7 @@ public class Playlist {
     private String nome;
     private int quant;
     private List<Track> tracks;
+    private static int INDEX = 0;
 
     public Playlist(String nome, List<Track> tracks) {
         this.nome = nome;
@@ -58,6 +59,10 @@ public class Playlist {
 
     public void setTracks(List<Track> tracks) {
         this.tracks = tracks;
+    }
+
+    public int getINDEX(){
+        return this.INDEX++;
     }
     public String toString(){
         return this.nome+"[contains "+this.quant+" songs (lenght undefined)]";

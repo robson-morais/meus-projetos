@@ -31,7 +31,7 @@ public class Track implements Comparable<Track> {
 
     @Override
     public String toString() {
-        return"'"+this.name+"'"+ " by " + this.artist;
+        return"'"+this.name+"'"+ " by " + this.artist+"\n";
     }
 
     public String playback(){
