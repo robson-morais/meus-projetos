@@ -3,9 +3,8 @@ package musicfy;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-public class Player {
+public class Main {
     public static void main(String[] args) {
 
         List<Album> albums = new ArrayList<>();
