@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
 
-public class Main2 {
-    public static void main(String[] args) {
+public class Main {
+    public static void main(String[] args) throws IOException {
 
         AlbumList albumsList = null;
         TrackList trackList = null;
@@ -80,23 +80,8 @@ public class Main2 {
                                         case 2:
                                             String keyAlbum = JOptionPane.showInputDialog("Album title: ");
 
-                                            // Verifica se o album existe na Biblioteca:
-                                            if (albumsList.contains(keyAlbum)) {
-                                                List<Track> albumFoundedTracks = trackList.searchAlbum(keyAlbum);
-                                                String artist = null;
-                                                for (Track t : albumFoundedTracks) {
-                                                    artist = t.getArtist();
-                                                    break;
-                                                }
-                                                JOptionPane.showMessageDialog(null, "Album(s) found:  =====================\n\n" + keyAlbum + "'" + " by " + artist + "\n" + albumFoundedTracks + "\n \nThis Album is in your Downloaded Library.");
+                                            JOptionPane.showMessageDialog(null, "Album found:  =====================\n\n"+trackList.searchAlbumTest(keyAlbum,albumsList));
 
-                                            } else {
-                                                String option = JOptionPane.showInputDialog("This album isn't in your library.\nWould you like to add it now? (Y/N)");
-
-                                                if (option.equalsIgnoreCase("y")) {
-                                                    JOptionPane.showMessageDialog(null, "Try again later...");
-                                                }
-                                            }
                                             break;
                                         case 3:
                                             String keyArtist = JOptionPane.showInputDialog("Type artist name: ");
@@ -113,7 +98,7 @@ public class Main2 {
                                 break;
                             case 3:
                                 if (albumsList != null) {
-                                    JOptionPane.showMessageDialog(null, "Downloaded Albums:  ====================\n \n" + albumsList.getAlbums());
+                                    JOptionPane.showMessageDialog(null, "Downloaded Albums:  ====================\n \n" + albumsList.getAlbumsTitles());
                                 }
                                 break;
                             case 4:

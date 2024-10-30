@@ -1,5 +1,6 @@
 package musicfy;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class TrackList {
         } return albumsTitles;
     }
 
-    public List<Track> searchAlbum(String album){
+    public List<Track> searchAlbumTracks(String album){
         List<Track> list = new ArrayList<>();
         for (Track track: this.tracks){
             if (track.getAlbum().equalsIgnoreCase(album)){
@@ -53,7 +54,7 @@ public class TrackList {
         return list;
     }
 
-    public Track searchTrack(String title) throws IOException{
+    public Track searchSingleTrack(String title) throws IOException{
         Track trackFound = null;
         for (Track track: this.tracks){
             if (track.getName().equalsIgnoreCase(title)) {
@@ -96,6 +97,7 @@ public class TrackList {
     }
 
     public List<String> searchArtistAlbums(String artistName) {
+        //Exibe os álbums de um artista;
         List<String> artistAlbums = new ArrayList<>();
         for (Track track: this.tracks) {
             if (track.getArtist().equalsIgnoreCase(artistName)) {
@@ -105,12 +107,49 @@ public class TrackList {
         }
         return artistAlbums;
     }
+    public String searchAlbumTest (String albumName, AlbumList albumList) throws IOException {
+        String finalString = "";
+        String albumFoundedTitle = "";
+        String artistAlbumFounded = "";
+
+        List<Track> tracksForAlbumFounded = new ArrayList<>();
+
+        // Verifica se o album existe na Biblioteca:
+        if (albumList.contains(albumName)) {
+
+            for (Track track: this.tracks) {
+                if (track.getAlbum().equalsIgnoreCase(albumName)) {
+                    tracksForAlbumFounded.add(track);
+                    artistAlbumFounded = track.getArtist();
+                    albumFoundedTitle = track.getAlbum();
+                }
+            }
+
+            // Formatando a string de exibição do álbum:
+            finalString = "'"+albumFoundedTitle+"'"+" by "+artistAlbumFounded+"\n\n";
+            for (int i = 0; i < tracksForAlbumFounded.size(); i++) {
+                finalString += i+1+".  "+tracksForAlbumFounded.get(i).getName()+"\n";
+            }
+            finalString += "\nTotal : "+tracksForAlbumFounded.size()+" tracks";
+
+
+        } else {
+            finalString = "No matches...";
+        }
+        return finalString;
+    }
+
+
 
     public String lastAddedSongs() {
+        //Este método apenas pega um quantidade de faixas para exibir seus títulos na página incial;
         String listN = "";
         for (int k=0; k<5; k++){
             listN += "~"+this.tracks.get(k).toString();
 
         } return listN;
     }
+
+
+
 }

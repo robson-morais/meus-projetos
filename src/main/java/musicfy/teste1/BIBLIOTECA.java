@@ -1,4 +1,4 @@
-package musicfy.teste1;
+/*package musicfy.teste1;
 
 import musicfy.Album;
 
@@ -37,14 +37,7 @@ public class BIBLIOTECA {
         return quant;
     }
 
-    public String [] showAlbumSongs(Album album){
-        int quant = album.getTracks().size();
-        String [] namesSongs =new String[quant];
-        for (int u=0;u<quant;u++){
-            namesSongs[u] = album.getTracks().get(u).getName();
-        }
-        return namesSongs;
-    }
+
 
     public String [] searchAlbums(String title){
         int quant = this.albumsList.size();
@@ -63,7 +56,7 @@ public class BIBLIOTECA {
         for (int e=0; e<quant; e++){
             playlistsf[e] = this.playlists.get(e).getINDEX()+". "+this.playlists.get(e).getNome();
         }
-        return playlistsf; //TODO*/
+        return playlistsf; //TODO
     }
 
 
@@ -103,4 +96,4 @@ public class BIBLIOTECA {
     public String toString(){
         return "username: "+this.user+"\n"+this.playlists.size()+" playlists\n"+this.albumsList.size()+" albums\n"+this.artists.length+" artists";
     }
-}
+}*/
