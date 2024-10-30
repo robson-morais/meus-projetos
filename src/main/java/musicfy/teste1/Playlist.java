@@ -1,4 +1,6 @@
-package musicfy;
+package musicfy.teste1;
+
+import musicfy.Track;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,6 @@
-package musicfy;
+package musicfy.teste1;
+
+import musicfy.Album;
 
 import java.util.List;
 

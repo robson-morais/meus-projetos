@@ -1,21 +1,22 @@
 package musicfy;
 
+import javax.swing.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Album{
+public class Album extends TrackList{
     private String title;
     private String artist;
     private List<Track> tracks;
 
-    public Album(String title, String artist, List<Track> tracks) {
+    public Album(String title, String artist) {
         this.title = title;
         this.artist = artist;
-        this.tracks = tracks;
     }
 
     public Album() {
-        this("","",new ArrayList<>());
+        this("","");
     }
 
     public String getTitle() {
@@ -37,12 +38,18 @@ public class Album{
     public List<Track> getTracks() {
         return tracks;
     }
+    public void addTracks(List<Track> tracks) throws IOException{
+        if (tracks != null){
+            this.tracks = tracks;
+        } throw new IOException("A lista está vazia");
 
+    }
     public String [] showOrderTracks(){
         String [] order = new String[this.tracks.size()+1];
+        List<Track> thisTracks = this.tracks.stream().toList();
         order[0] = "'"+this.getTitle()+"' by "+this.artist;
         for (int t = 0; t<this.tracks.size();t++){
-            order[t+1] = t+1+". "+this.tracks.get(t).getName();
+            order[t+1] = t+1+". "+thisTracks.get(t).getName();
         }
         return order;
     }
@@ -53,6 +60,6 @@ public class Album{
 
     @Override
     public String toString() {
-        return "Album '"+this.title+"' by "+this.artist+"\nTracks: ";
+        return "'" + this.title + "' by " + this.artist + "\n";
     }
 }
