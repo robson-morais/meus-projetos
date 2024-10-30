@@ -2,6 +2,7 @@ package musicfy.teste1;
 
 import musicfy.Album;
 
+import java.io.IOException;
 import java.util.List;
 
 public class BIBLIOTECA {
@@ -10,11 +11,14 @@ public class BIBLIOTECA {
     private String[] artists;
     private String user;
 
+    private GravadorDeDados gravadordeAlbums;
+
     public BIBLIOTECA(List<Album> albumsList, List<Playlist> playlists, String[] artists, String user) {
         this.albumsList = albumsList;
         this.playlists = playlists;
         this.artists = artists;
         this.user = user;
+        this.gravadordeAlbums = new GravadorDeDados();
     }
 
     public String [] nomesAlbums(){
@@ -62,13 +66,38 @@ public class BIBLIOTECA {
         return playlistsf; //TODO*/
     }
 
-    public void addPlaylist(Playlist playlist){
-        this.playlists.add(playlist);
+
+
+
+
+
+
+
+
+    public void salvarDados() throws IOException{
+        this.gravadordeAlbums.gravaAlbums(this.albumsList);
     }
+
+    public void recuperarDados() throws IOException{
+        this.albumsList = this.gravadordeAlbums.recuperaAlbums();
+    }
+
+
+
+
+
+
+
+
+
 
     public List<Playlist> getPlaylists(){
         return this.playlists;
     }
+    public void addPlaylist(Playlist playlist){
+        this.playlists.add(playlist);
+    }
+
 
 
     public String toString(){
