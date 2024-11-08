@@ -1,3 +1,0 @@
-o objeto Tarefa tem os seguintes atributos privados: String descricao, String categoria, DataSimples dataLimite
-(onde o objeto DataSimples tem os seguintes argumentos privados: int dia, int mes e int ano)
-e String status. Me mostre o seguinte código de persistência de dados chamado GravadorDeDados sem o lançamento de excessões e seus tratamentos:

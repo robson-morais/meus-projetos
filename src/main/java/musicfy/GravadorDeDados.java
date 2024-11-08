@@ -10,7 +10,7 @@ public class GravadorDeDados {
     // Atributo da classe:
     private String arquivosMusicas;
 
-    //Construtores do teste1 de dados:
+    //Construtores do testesFX de dados:
     public GravadorDeDados(String arquivosMusicas){
         this.arquivosMusicas = arquivosMusicas;
     }
