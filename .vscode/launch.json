@@ -1,0 +1,86 @@
+{
+    // Use o IntelliSense para saber mais sobre os atributos possíveis.
+    // Focalizar para exibir as descrições dos atributos existentes.
+    // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "type": "java",
+            "name": "Attach",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "<debug port of the debuggee>"
+        },
+        
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Empresa",
+            "request": "launch",
+            "mainClass": "empresa.Empresa",
+            "projectName": "MeusProjetos"
+        },
+        {
+            "type": "java",
+            "name": "testes",
+            "request": "launch",
+            "mainClass": "empresa.testes",
+            "projectName": "MeusProjetos"
+        },
+        {
+            "type": "java",
+            "name": "circunferencia",
+            "request": "launch",
+            "mainClass": "math.circunferencia",
+            "projectName": "MeusProjetos"
+        },
+        {
+            "type": "java",
+            "name": "elipse",
+            "request": "launch",
+            "mainClass": "math.elipse",
+            "projectName": "MeusProjetos"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "musicfy.Main",
+            "projectName": "MeusProjetos"
+        },
+        {
+            "type": "java",
+            "name": "Main2_test",
+            "request": "launch",
+            "mainClass": "musicfy.Main2_test",
+            "projectName": "MeusProjetos"
+        },
+        {
+            "type": "java",
+            "name": "MusicPlayerApp",
+            "request": "launch",
+            "mainClass": "musicfy.testesFX.MusicPlayerApp",
+            "projectName": "MeusProjetos"
+        },
+        {
+            "type": "java",
+            "name": "PlayerFXcss",
+            "request": "launch",
+            "mainClass": "musicfy.testesFX.PlayerFXcss",
+            "projectName": "MeusProjetos"
+        },
+        {
+            "type": "java",
+            "name": "Main(1)",
+            "request": "launch",
+            "mainClass": "testes2.Main",
+            "projectName": "MeusProjetos"
+        }
+    ]
+}
