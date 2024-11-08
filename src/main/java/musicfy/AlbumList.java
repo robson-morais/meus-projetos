@@ -1,6 +1,5 @@
 package musicfy;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +24,12 @@ public class AlbumList {
         return albums;
     }
 
-    public String getAlbumsTitles() {
-        String albumsNames = "";
+    public List<String> getAlbumsTitles() {
+        List<String> albumsNames = new ArrayList<>();
 
         for (int y = 0; y < this.albums.size(); y++) {
-            albumsNames += "'" +this.albums.get(y).getTitle()+ "'  by  " + this.albums.get(y).getArtist()+"\n";
+            albumsNames.add(albums.get(y).getTitle() + "\n");
         }
-
         return albumsNames;
     }
 

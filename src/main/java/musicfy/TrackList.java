@@ -1,6 +1,5 @@
 package musicfy;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +37,13 @@ public class TrackList {
     }
 
     public List<String> getAlbumsTitles(){
+
         List<String> albumsTitles = new ArrayList<>();
+
         for (Track track: this.tracks) {
-            albumsTitles.add(track.getAlbum()+"\n");
+            if ((albumsTitles.contains(track.getAlbum())) == false){
+                albumsTitles.add(track.getAlbum()+"\n");
+            }
         } return albumsTitles;
     }
 
@@ -107,7 +110,7 @@ public class TrackList {
         }
         return artistAlbums;
     }
-    public String searchAlbumTest (String albumName, AlbumList albumList) throws IOException {
+    public String searchAlbumInfo (String albumName, AlbumList albumList) throws IOException {
         String finalString = "";
         String albumFoundedTitle = "";
         String artistAlbumFounded = "";
@@ -124,22 +127,40 @@ public class TrackList {
                     albumFoundedTitle = track.getAlbum();
                 }
             }
-
             // Formatando a string de exibição do álbum:
             finalString = "'"+albumFoundedTitle+"'"+" by "+artistAlbumFounded+"\n\n";
             for (int i = 0; i < tracksForAlbumFounded.size(); i++) {
                 finalString += i+1+".  "+tracksForAlbumFounded.get(i).getName()+"\n";
             }
             finalString += "\nTotal : "+tracksForAlbumFounded.size()+" tracks";
-
-
         } else {
             finalString = "No matches...";
         }
         return finalString;
     }
 
+    public String searchAlbumOrdenedTracks (String albumName, AlbumList albumList) {
+        String finalString = "";
 
+        List<Track> tracksForAlbumFounded = new ArrayList<>();
+
+        // Verifica se o album existe na Biblioteca:
+        if (albumList.contains(albumName)) {
+
+            for (Track track: this.tracks) {
+                if (track.getAlbum().equalsIgnoreCase(albumName)) {
+                    tracksForAlbumFounded.add(track);
+                }
+            }
+            // Formatando a string de exibição do álbum:
+            for (int i = 0; i < tracksForAlbumFounded.size(); i++) {
+                finalString += i+1+".  "+tracksForAlbumFounded.get(i).getName()+"\n";
+            }
+        } else {
+            finalString = "No matches...";
+        }
+        return finalString;
+    }
 
     public String lastAddedSongs() {
         //Este método apenas pega um quantidade de faixas para exibir seus títulos na página incial;

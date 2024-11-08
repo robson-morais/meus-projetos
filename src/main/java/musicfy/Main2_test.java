@@ -80,7 +80,7 @@ public class Main2_test {
                                         case 2:
                                             String keyAlbum = JOptionPane.showInputDialog("Album title: ");
 
-                                            JOptionPane.showMessageDialog(null, "Album found:  =====================\n\n"+trackList.searchAlbumTest(keyAlbum,albumsList));
+                                            JOptionPane.showMessageDialog(null, "Album found:  =====================\n\n"+trackList.searchAlbumInfo(keyAlbum,albumsList));
 
                                             break;
                                         case 3:

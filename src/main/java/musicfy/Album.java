@@ -1,8 +1,6 @@
 package musicfy;
 
-import javax.swing.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Album extends TrackList{
@@ -38,6 +36,7 @@ public class Album extends TrackList{
     public List<Track> getTracks() {
         return tracks;
     }
+
     public void addTracks(List<Track> tracks) throws IOException{
         if (tracks != null){
             this.tracks = tracks;
