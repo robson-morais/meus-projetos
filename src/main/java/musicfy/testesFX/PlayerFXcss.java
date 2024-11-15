@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Stack;
 
 public class PlayerFXcss extends Application {
 
@@ -26,6 +27,8 @@ public class PlayerFXcss extends Application {
     private GravadorDeDados recorder;
     private GravadorAlbum recorderAlbum;
     private Scene mainScene;
+
+    private Stack<Scene> sceneStack = new Stack<>();  // Pilha para armazenar as cenas
 
     MediaPlayer mediaPlayer; // Variável para controlar o MediaPlayer
 
@@ -38,6 +41,10 @@ public class PlayerFXcss extends Application {
         recorderAlbum = new GravadorAlbum();
         // Recuperando dados salvos
         initializeData();
+
+        //todo: testando o backbutton
+        sceneStack.push(primaryStage.getScene());
+
 
         // Tela Inicial:
         Label wecomeInfo = new Label("Bem-vindo,\n" + username + "!");
@@ -172,7 +179,7 @@ public class PlayerFXcss extends Application {
             for (Track track: trackList.getTracks()) {
                 if (track.getName().equalsIgnoreCase(searchText)) {
                     Button trackButton = new Button("'"+track.getName()+"' song by "+track.getArtist());
-                    trackButton.setOnAction(e -> playTrack(track.getName(),stage));
+                    trackButton.setOnAction(e -> playTrack(track.getName()));
                     trackButton.setStyle("-fx-font-size: 15px; -fx-background-color: white; -fx-font-weight: bold;");
                     ListOfTracksVbox.getChildren().add(trackButton);
                 }
@@ -283,7 +290,7 @@ public class PlayerFXcss extends Application {
             if (track3.getAlbum().equalsIgnoreCase(albumName1)) {
 
                 Button trackButton = new Button((c++) + ". " + track3.getName());
-                trackButton.setOnAction(e -> playTrack(track3.getName(),stage));
+                trackButton.setOnAction(e -> playTrack(track3.getName()));
                 trackButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: normal;");
                 vboxTracks.getChildren().add(trackButton);
             }
@@ -295,11 +302,13 @@ public class PlayerFXcss extends Application {
         return vboxTracksscroll;
     }
 
-    private void playTrack(String trackName, Stage stage) {
+    private void playTrack(String trackName) {
         // Para qualquer música que esteja tocando, parar antes de reproduzir outra
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
+
+        Stage playBack = new Stage();
 
         for (Track track : trackList.getTracks()) {
             if (track.getName().equalsIgnoreCase(trackName)) {
@@ -320,7 +329,6 @@ public class PlayerFXcss extends Application {
                     Label songInfoLabel = new Label("\n\n" + track.getName() + "\n"+ track.getArtist());
                     songInfoLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
 
-
                     // Botões Play e Pause
                     Button playButton = new Button("\u23F5");
                     playButton.setOnAction(e -> mediaPlayer.play());
@@ -331,13 +339,6 @@ public class PlayerFXcss extends Application {
 
                     Button backButton = new Button("Back");
                     backButton.setStyle("-fx-padding: 5px 10px; -fx-background-color: #006400; -fx-text-fill: white; -fx-alignment: center-left;");
-                    backButton.setOnAction(e-> {
-                        try {
-                            showSearchResults(trackName,stage);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        };mediaPlayer.stop();
-                    });
 
                     // Barra de progresso
                     Slider progressBar = new Slider();
@@ -384,22 +385,15 @@ public class PlayerFXcss extends Application {
                     HBox imageAndInfo = new HBox(10,imageView,root);
 
                     // Configura a cena e exibe o player
+
                     Scene scene = new Scene(imageAndInfo, 425, 200);
-                    stage.setTitle(track.getName() + " - " + track.getArtist());
-                    stage.setScene(scene);
+                    playBack.setScene(scene);
 
-                    backButton.setOnAction(e-> {
-                        try {
-                            showSearchResults(trackName,stage);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        };mediaPlayer.stop();
-                    });
-                    stage.show();
+                    backButton.setOnAction(e-> {mediaPlayer.stop(); playBack.close();});
 
+                    playBack.show();
                     // Inicia a reprodução da faixa
                     mediaPlayer.play();
-                    System.out.println("Tocando pelo media player: " + track.getName());
                     return;
                 } else {
                     System.out.println("A faixa não está em seus downloads locais");
@@ -407,6 +401,57 @@ public class PlayerFXcss extends Application {
             }
         }
         System.out.println("A faixa não está em seus downloads.");
+
+    }
+
+    private HBox miniPlayback () {
+        // Para qualquer música que esteja tocando, parar antes de reproduzir outra
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+
+        for (Track track : trackList.getTracks()) {
+            //if (track.getName().equalsIgnoreCase(trackName)) {
+                // Construa o caminho para o arquivo de áudio
+                String filePath = "C:/Users/Robson/Music/" + track.getAlbum() + "/" + track.getName() + ".mp3";
+                File file = new File(filePath);
+
+                // Caminho para a imagem do álbum
+                String imagePath = "C:/Users/Robson/Pictures/Covers/" + track.getAlbum() + ".jpeg";
+                File imageFile = new File(imagePath);
+
+                if (file.exists() || imageFile.exists()) {
+                    // Cria o objeto Media e MediaPlayer
+                    Media media = new Media(file.toURI().toString());
+                    mediaPlayer = new MediaPlayer(media);
+
+                    // Label para as informações da faixa:
+                    Label songInfoLabel = new Label("\n\n" + track.getName() + "\n" + track.getArtist());
+                    songInfoLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+
+                    // Botões Play e Pause
+                    Button playButton = new Button("\u23F5");
+                    playButton.setOnAction(e -> mediaPlayer.play());
+                    Button pauseButton = new Button("\u23F8");
+                    pauseButton.setOnAction(e -> mediaPlayer.pause());
+                    Button stopButton = new Button("\u23F9");
+                    stopButton.setOnAction(e -> mediaPlayer.stop());
+
+                    Button backButton = new Button("Back");
+                    backButton.setStyle("-fx-padding: 5px 10px; -fx-background-color: #006400; -fx-text-fill: white; -fx-alignment: center-left;");
+
+                    // Imagem do álbum
+                    Image image = new Image(imageFile.toURI().toString());
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(200);
+                    imageView.setFitHeight(200);
+                    imageView.setStyle("-fx-alignment: center;");
+
+
+
+                }
+           // }
+        }return new HBox(10);
     }
 
 
