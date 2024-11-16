@@ -153,8 +153,55 @@ public class PlayerFXcss extends Application {
         });
 
         albumsButton.setOnAction(e -> showAllAlbumListButtons(primaryStage));
+
+        songsButton.setOnAction(e -> allSongsScroller());
     }
 
+    private void allSongsScroller (){
+        VBox songs = new VBox(10);
+        VBox songsLayout = new VBox(10);
+
+        Button back = new Button("Back");
+        back.setStyle("-fx-padding: 10px 20px; -fx-background-color: #006400; -fx-text-fill: white;");
+
+        ScrollPane scrollPane = new ScrollPane(songs);
+        if (trackList.getTracks() != null) {
+            for (Track track: trackList.getTracks()) {
+
+                Button trackbutton = new Button(track.getName() + "\n" + track.getArtist());
+                trackbutton.setOnAction(e -> playTrack(track.getName()));
+                trackbutton.setStyle("-fx-font-size: 11px; -fx-background-color: white; -fx-font-weight: bold;");
+
+
+                // Caminho para a imagem do álbum
+                String imagePath = "C:/Users/Robson/Pictures/Covers/" + track.getAlbum() + ".jpeg";
+                File imageFile = new File(imagePath);
+
+                if (imageFile.exists()) {
+                    Image image = new Image(imageFile.toURI().toString());
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(50);
+                    imageView.setFitHeight(50);
+                    imageView.setStyle("-fx-alignment: center;");
+                    trackbutton.setGraphic(imageView);
+
+                    HBox imageXinfo = new HBox(10,trackbutton);
+                    songs.getChildren().add(imageXinfo);
+                }
+
+            }
+            scrollPane.setFitToWidth(true);
+            songsLayout.getChildren().add(scrollPane);
+            songsLayout.getChildren().add(back);
+        }
+
+        Scene scene = new Scene(songsLayout,300,300);
+        Stage stage = new Stage();
+        back.setOnAction(e -> stage.close());
+
+        stage.setScene(scene);
+        stage.show();
+    }
 
     private void showSearchResults (String searchText, Stage stage) throws IOException {
 
@@ -369,8 +416,8 @@ public class PlayerFXcss extends Application {
                     // Imagem do álbum
                     Image image = new Image(imageFile.toURI().toString());
                     ImageView imageView = new ImageView(image);
-                    imageView.setFitWidth(200);
-                    imageView.setFitHeight(200);
+                    imageView.setFitWidth(100);
+                    imageView.setFitHeight(100);
                     imageView.setStyle("-fx-alignment: center;");
 
                     // Layout HBox para os botões
@@ -378,15 +425,12 @@ public class PlayerFXcss extends Application {
                     controlBox.setStyle("-fx-alignment: center;"); // Centraliza os botões no HBox
 
                     // Layout VBox para centralizar a imagem, barra de progresso e botões
-                    VBox root = new VBox(10, songInfoLabel, progressBar, controlBox, backButton);
-                    //root.setStyle("-fx-alignment: center;"); // Centraliza tudo no VBox
+                    VBox root = new VBox(10, imageView, songInfoLabel, progressBar, controlBox, backButton);
+                    root.setStyle("-fx-alignment: center;"); // Centraliza tudo no VBox
 
-                    // Layout HBox para cover e informações da faixa:
-                    HBox imageAndInfo = new HBox(10,imageView,root);
 
                     // Configura a cena e exibe o player
-
-                    Scene scene = new Scene(imageAndInfo, 425, 200);
+                    Scene scene = new Scene(root, 300, 300);
                     playBack.setScene(scene);
 
                     backButton.setOnAction(e-> {mediaPlayer.stop(); playBack.close();});
