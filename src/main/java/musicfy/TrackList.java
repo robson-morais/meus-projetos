@@ -2,6 +2,7 @@ package musicfy;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class TrackList {
@@ -27,19 +28,17 @@ public class TrackList {
         return tracks;
     }
 
-    public List<String> getArtistsNames() throws TrackException {
-        if (this.tracks != null) {
-            List<String> artistsNames = new ArrayList<>();
-            for (Track track: this.tracks) {
-               artistsNames.add(track.getArtist());
-            } return artistsNames;
-        } throw new TrackException("Lista vazia");
+    public HashSet<String> getArtistsNames() {
+
+        HashSet<String> lista1 = new HashSet<>();
+        for (Track track : this.tracks) {
+            lista1.add(track.getArtist());
+        }
+        return lista1;
     }
 
     public List<String> getAlbumsTitles(){
-
         List<String> albumsTitles = new ArrayList<>();
-
         for (Track track: this.tracks) {
             if ((albumsTitles.contains(track.getAlbum())) == false){
                 albumsTitles.add(track.getAlbum()+"\n");
@@ -89,7 +88,7 @@ public class TrackList {
         return artistFound;
     }
 
-    public List<String> searchArtistSongs(String artistName) {
+    public List<String> searchArtistSongsNames(String artistName) {
         List<String> artistSongs = new ArrayList<>();
         for (Track track: this.tracks) {
             if (track.getArtist().equalsIgnoreCase(artistName)) {
@@ -99,13 +98,22 @@ public class TrackList {
         return artistSongs;
     }
 
-    public List<String> searchArtistAlbums(String artistName) {
-        //Exibe os álbums de um artista;
-        List<String> artistAlbums = new ArrayList<>();
+    public List<Track> searchArtistSongs(String artistName) {
+        List<Track> artistSongs = new ArrayList<>();
         for (Track track: this.tracks) {
             if (track.getArtist().equalsIgnoreCase(artistName)) {
-                artistAlbums.add(track.getAlbum()+"\n");
-                break;
+                artistSongs.add(track);
+            }
+        }
+        return artistSongs;
+    }
+
+    public HashSet<String> searchArtistAlbums(String artistName) {
+        //Exibe os álbums de um artista;
+        HashSet<String> artistAlbums = new HashSet<>();
+        for (Track track: this.tracks) {
+            if (track.getArtist().equalsIgnoreCase(artistName)) {
+                artistAlbums.add(track.getAlbum());
             }
         }
         return artistAlbums;
@@ -170,6 +178,20 @@ public class TrackList {
 
         } return listN;
     }
+
+    public int countArtistSongs(String artistName) {
+        int count = 0;
+        for (String artist: getArtistsNames()) {
+            if (artist.equalsIgnoreCase(artistName)) {
+                for (Track track: this.tracks) {
+                    if (track.getArtist().equalsIgnoreCase(artist)){
+                        count +=1;
+                    }
+                }
+            }
+        } return count;
+    }
+
 
 
 

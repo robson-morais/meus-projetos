@@ -106,12 +106,8 @@ public class Main2_test {
                                 JOptionPane.showMessageDialog(null, "Your PlayLists:  =====================\n \nDownloaded songs: " + trackList.getTracks().size() + "\n\n");
                                 break;
                             case 5:
-                                try {
                                     JOptionPane.showMessageDialog(null, "Saved artists:\n" + trackList.getArtistsNames());
                                     artistCount += trackList.getArtistsNames().size();
-                                } catch (TrackException a) {
-                                    JOptionPane.showMessageDialog(null, a.getMessage());
-                                }
                                 break;
                             case 6:
                                 while (i != 2) {

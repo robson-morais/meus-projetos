@@ -16,8 +16,7 @@ import musicfy.*;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class PlayerFXcss extends Application {
 
@@ -26,39 +25,31 @@ public class PlayerFXcss extends Application {
     private TrackList trackList;
     private GravadorDeDados recorder;
     private GravadorAlbum recorderAlbum;
-    private Scene mainScene;
-
-    private Stack<Scene> sceneStack = new Stack<>();  // Pilha para armazenar as cenas
+    private String imagespath = PlayerFXcss.class.getResource("/images/").toString();
 
     MediaPlayer mediaPlayer; // Variável para controlar o MediaPlayer
-
 
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        // Inicializando os gravadores de dados
+        //Inicializando os gravadores de dados
         recorder = new GravadorDeDados();
         recorderAlbum = new GravadorAlbum();
-        // Recuperando dados salvos
-        initializeData();
+        initializeData(); //Recuperando dados salvos
 
-        //todo: testando o backbutton
-        sceneStack.push(primaryStage.getScene());
-
-
-        // Tela Inicial:
+        //Tela Inicial:
         Label wecomeInfo = new Label("Bem-vindo,\n" + username + "!");
         wecomeInfo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        Label info1 = new Label("Músicas adicionadas recentemente:  ====\n"+trackList.lastAddedSongs()+"\n=============================");
+        Label info1 = new Label("Tocadas recentemente:  ====\n\n"+trackList.lastAddedSongs()+"\n=============================");
         info1.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
 
-        Image image = new Image("file:///C:/Users/Robson/Pictures/profile.jpg");
+        Image image = new Image(imagespath + "profile/profilepic.jpeg"); //--> imagem anexada no projeto
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(50);  // Largura da imagem
         imageView.setFitHeight(50);
 
-        // Criar o botão com a imagem
+        //Botões:
         Button libraryButton = new Button("BIBLIOTECA");
         Button exitButton = new Button("SAIR");
         Button profile = new Button();
@@ -69,7 +60,6 @@ public class PlayerFXcss extends Application {
         profile.setStyle("-fx-padding: 0;");
 
         HBox header = new HBox(100,wecomeInfo, profile);
-        //header.setStyle("-fx-alignment: center;");
         HBox buttons = new HBox(30, libraryButton, exitButton);
         buttons.setStyle("-fx-alignment: center;");
 
@@ -154,31 +144,33 @@ public class PlayerFXcss extends Application {
 
         albumsButton.setOnAction(e -> showAllAlbumListButtons(primaryStage));
 
-        songsButton.setOnAction(e -> allSongsScroller());
+        songsButton.setOnAction(e -> songsScroller(trackList.getTracks()));
+
+        artistsButton.setOnAction(e-> showAllArtists(primaryStage));
     }
 
-    private void allSongsScroller (){
+    private void songsScroller (List<Track> tracks){
+
         VBox songs = new VBox(10);
         VBox songsLayout = new VBox(10);
 
         Button back = new Button("Back");
         back.setStyle("-fx-padding: 10px 20px; -fx-background-color: #006400; -fx-text-fill: white;");
 
+        //Ajustando todas as faixas para que seja feita a rolagem na tela:
         ScrollPane scrollPane = new ScrollPane(songs);
-        if (trackList.getTracks() != null) {
-            for (Track track: trackList.getTracks()) {
+
+        // Orndenando as faixas:
+        Collections.sort(tracks, Comparator.comparing(Track::getName));
+
+        if (tracks != null) {
+            for (Track track: tracks) {
 
                 Button trackbutton = new Button(track.getName() + "\n" + track.getArtist());
                 trackbutton.setOnAction(e -> playTrack(track.getName()));
                 trackbutton.setStyle("-fx-font-size: 11px; -fx-background-color: white; -fx-font-weight: bold;");
 
-
-                // Caminho para a imagem do álbum
-                String imagePath = "C:/Users/Robson/Pictures/Covers/" + track.getAlbum() + ".jpeg";
-                File imageFile = new File(imagePath);
-
-                if (imageFile.exists()) {
-                    Image image = new Image(imageFile.toURI().toString());
+                    Image image = new Image(imagespath + "covers/" + track.getAlbum() + ".jpeg");
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(50);
                     imageView.setFitHeight(50);
@@ -187,7 +179,6 @@ public class PlayerFXcss extends Application {
 
                     HBox imageXinfo = new HBox(10,trackbutton);
                     songs.getChildren().add(imageXinfo);
-                }
 
             }
             scrollPane.setFitToWidth(true);
@@ -204,77 +195,73 @@ public class PlayerFXcss extends Application {
     }
 
     private void showSearchResults (String searchText, Stage stage) throws IOException {
-
-        String allResultsFounded = "Results for: '" + searchText+"'===============\n";
-
-        Label resultsLabelHeader = new Label(allResultsFounded);
-        resultsLabelHeader.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+        VBox resultsLayout = new VBox(15);
 
         Button backButton = new Button(" Back ");
         backButton.setStyle("-fx-padding: 10px 20px; -fx-background-color: #006400; -fx-text-fill: white;");
-
-        // Ações do botões:
         backButton.setOnAction(e -> showLibrary(stage));
 
-        VBox ListOfTracksVbox = new VBox(10);
-        VBox ListOfAlbums = new VBox(10);
-        VBox resultsVBox = new VBox(20,resultsLabelHeader);
+        VBox resultsList = new VBox(10);
+        ScrollPane results = new ScrollPane(resultsList);
+        results.setFitToWidth(true);
 
-        //todo: verificar se o input é uma faixa, álbum ou artista;
-        //todo: cria um botão para tocar cada faixa encontrada:
         if (trackList.getTracks() != null) {
             for (Track track: trackList.getTracks()) {
-                if (track.getName().equalsIgnoreCase(searchText)) {
-                    Button trackButton = new Button("'"+track.getName()+"' song by "+track.getArtist());
+                if (track.getName().toLowerCase().startsWith(searchText.toLowerCase())) {
+                    Button trackButton = new Button(track.getName()+"\n song by "+track.getArtist());
                     trackButton.setOnAction(e -> playTrack(track.getName()));
-                    trackButton.setStyle("-fx-font-size: 15px; -fx-background-color: white; -fx-font-weight: bold;");
-                    ListOfTracksVbox.getChildren().add(trackButton);
+                    trackButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: bold;");
+                    // Imagem do botão:
+                    Image trackCover = new Image(imagespath + "covers/" + track.getAlbum() + ".jpeg");
+                    ImageView trackCoverView = new ImageView(trackCover);
+                    trackCoverView.setFitWidth(50);
+                    trackCoverView.setFitHeight(50);
+                    trackButton.setGraphic(trackCoverView);
+                    resultsList.getChildren().add(trackButton);
                 }
             }
-            resultsVBox.getChildren().add(ListOfTracksVbox);
         }
-
         if (albumsList.getAlbums() != null) {
             for (Album albu: albumsList.getAlbums()) {
                 if (albu.getTitle().toLowerCase().startsWith(searchText.toLowerCase())) {
-
-                    HBox resultAlbum = new HBox(10);
-
-                    Button albumButton = new Button(albu.getTitle() + "\n" + albu.getArtist());
+                    Button albumButton = new Button(albu.getTitle() + "\nalbum by " + albu.getArtist());
                     albumButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: bold;");
-
                     // Criando a capa do álbum:
-                    String imagePath = "C:/Users/Robson/Pictures/Covers/" + albu.getTitle() + ".jpeg";
-                    File imageFile = new File(imagePath);
-
-                    if (imageFile.exists()) {
-                        System.out.println("A capa do album para search foi encontrada");
-                        //Imagem do álbum
-                        Image image = new Image(imageFile.toURI().toString());
-                        ImageView imageView = new ImageView(image);
-                        imageView.setFitWidth(50);
-                        imageView.setFitHeight(50);
-
-                        albumButton.setGraphic(imageView);
-                    } else {
-                        System.out.println("Erro: a capa do album para search foi encontrada");
-                    }
+                    Image image = new Image(imagespath + "/covers/" + albu.getTitle() + ".jpeg");
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(50);
+                    imageView.setFitHeight(50);
+                    albumButton.setGraphic(imageView);
                     albumButton.setOnAction(e -> showAlbumPage(albu.getTitle(),stage));
-                    ListOfAlbums.getChildren().add(albumButton);
+                    resultsList.getChildren().add(albumButton);
                 }
             }
-            resultsVBox.getChildren().add(ListOfAlbums);
         }
-
-        resultsVBox.getChildren().add(backButton);
-        resultsVBox.setStyle("--fx-padding: 20px;-fx-alignment: center;");
-        Scene scene = new Scene(resultsVBox,300,300);
+        // Para o resultado ser um artista:
+        for (String artist: trackList.getArtistsNames()) {
+            if (artist.toLowerCase().startsWith(searchText.toLowerCase())) {
+                Button artistButton = new Button(artist + "\nartist");
+                Image artistFile = new Image(imagespath + "/artists/" + artist + ".jpeg");
+                ImageView artistImage = new ImageView(artistFile);
+                artistImage.setFitWidth(50);
+                artistImage.setFitHeight(50);
+                artistButton.setGraphic(artistImage);
+                artistButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: bold;");
+                artistButton.setOnAction(e-> showArtistPage(artist));
+                resultsList.getChildren().add(artistButton);
+            }
+        }
+        resultsLayout.getChildren().add(results);
+        resultsLayout.getChildren().add(backButton);
+        Scene scene = new Scene(resultsLayout,300,300);
         stage.setScene(scene);
+        stage.setTitle("Results for '" + searchText + "'");
     }
 
     private void showAlbumPage (String albumName, Stage stage) {
+        Stage albumPageStage = new Stage();
+
         VBox albumLayout = new VBox(10);
-        // albumLayout.setStyle("-fx-alignment: center;");
 
         HBox coverTitleArtist = new HBox(10);
 
@@ -295,37 +282,32 @@ public class PlayerFXcss extends Application {
 
                     VBox albumXartist = new VBox(10,albumTitle,albumArtist);
 
-                    ScrollPane scrollTracks = scrollAlbumSongsButtons(album2.getTitle(),stage);
+                    ScrollPane scrollTracks = scrollAlbumSongsButtons(album2.getTitle(),albumPageStage);
                     scrollTracks.setFitToWidth(true);
 
                     // Criando a capa do álbum:
-                    String imagePath = "C:/Users/Robson/Pictures/Covers/" + album2.getTitle() + ".jpeg";
-                    File imageFile = new File(imagePath);
+                    Image image = new Image(imagespath + "covers/" + album2.getTitle() + ".jpeg");
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(100);
+                    imageView.setFitHeight(100);
+                    // Adicionando a capa, o titulo, o artista, e o total de tracks no HBox:
+                    coverTitleArtist.getChildren().add(imageView);
+                    coverTitleArtist.getChildren().add(albumXartist);
 
-                    if (imageFile.exists()) {
-                        System.out.println("A capa do album para showAlbumPage foi encontrada");
-                        // Imagem do álbum
-                        Image image = new Image(imageFile.toURI().toString());
-                        ImageView imageView = new ImageView(image);
-                        imageView.setFitWidth(100);
-                        imageView.setFitHeight(100);
-                        // Adicionando a capa, o titulo, o artista, e o total de tracks no HBox:
-                        coverTitleArtist.getChildren().add(imageView);
-                        coverTitleArtist.getChildren().add(albumXartist);
-
-                        albumLayout.getChildren().add(coverTitleArtist);
-                        albumLayout.getChildren().add(scrollTracks);
-                        break;
-                    }
+                    albumLayout.getChildren().add(coverTitleArtist);
+                    albumLayout.getChildren().add(scrollTracks);
+                    break;
                 }
-            } albumLayout.getChildren().add(backButton);
+            }
+            albumLayout.getChildren().add(backButton);
         }
         Scene albumPage = new Scene(albumLayout,300,300);
-        backButton.setOnAction(e -> showAllAlbumListButtons(stage));
-        stage.setScene(albumPage);
+        backButton.setOnAction(e -> albumPageStage.close());
+        albumPageStage.setScene(albumPage);
+        albumPageStage.show();
     }
 
-    private ScrollPane scrollAlbumSongsButtons(String albumName1, Stage stage) {
+    private ScrollPane scrollAlbumSongsButtons (String albumName1, Stage stage) {
 
         VBox vboxTracks = new VBox(10);
 
@@ -349,7 +331,7 @@ public class PlayerFXcss extends Application {
         return vboxTracksscroll;
     }
 
-    private void playTrack(String trackName) {
+    private void playTrack (String trackName) {
         // Para qualquer música que esteja tocando, parar antes de reproduzir outra
         if (mediaPlayer != null) {
             mediaPlayer.stop();
@@ -363,11 +345,7 @@ public class PlayerFXcss extends Application {
                 String filePath = "C:/Users/Robson/Music/" + track.getAlbum() + "/" + track.getName() + ".mp3";
                 File file = new File(filePath);
 
-                // Caminho para a imagem do álbum
-                String imagePath = "C:/Users/Robson/Pictures/Covers/" + track.getAlbum() + ".jpeg";
-                File imageFile = new File(imagePath);
-
-                if (file.exists() || imageFile.exists()) {
+                if (file.exists()) {
                     // Cria o objeto Media e MediaPlayer
                     Media media = new Media(file.toURI().toString());
                     mediaPlayer = new MediaPlayer(media);
@@ -414,7 +392,7 @@ public class PlayerFXcss extends Application {
                     });
 
                     // Imagem do álbum
-                    Image image = new Image(imageFile.toURI().toString());
+                    Image image = new Image(imagespath + "covers/" + track.getAlbum() + ".jpeg");
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(100);
                     imageView.setFitHeight(100);
@@ -448,56 +426,97 @@ public class PlayerFXcss extends Application {
 
     }
 
-    private HBox miniPlayback () {
-        // Para qualquer música que esteja tocando, parar antes de reproduzir outra
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
+    private void showArtistPage(String artistName) {
+
+        Button backButton = new Button("Back");
+        backButton.setStyle("-fx-padding: 10px 20px; -fx-background-color: #006400; -fx-text-fill: white;");
+
+        HBox info = new HBox(10);
+        VBox artistLayout = new VBox(10);
+        artistLayout.getChildren().add(info);
+
+        if (trackList.getTracks() != null) {
+            for (String artist: trackList.getArtistsNames()) {
+
+                int cont = trackList.countArtistSongs(artist);
+
+                if (artist.toLowerCase().startsWith(artistName.toLowerCase())) {
+
+                    VBox infoNameXsongs = new VBox(5);
+
+                    Label infoName = new Label(artist);
+                    infoName.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+                    infoNameXsongs.getChildren().add(infoName);
+                    Label infoSongs = new Label(cont + " songs\n" + trackList.searchArtistAlbums(artist).size() + " albums");
+                    infoSongs.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+                    infoNameXsongs.getChildren().add(infoSongs);
+
+                    Image artistFile = new Image(imagespath + "/artists/" + artist + ".jpeg");
+                    ImageView artistImage = new ImageView(artistFile);
+                    artistImage.setFitWidth(100);
+                    artistImage.setFitHeight(100);
+                    info.getChildren().add(artistImage);
+                    info.getChildren().add(infoNameXsongs);
+                }
+            } List<Track> artistTracks = trackList.searchArtistSongs(artistName);
+            Collections.shuffle(artistTracks);
+
+            VBox firstSongs = new VBox(5);
+            ScrollPane firstSongsSP = new ScrollPane(firstSongs);
+            firstSongsSP.setFitToWidth(true);
+            for (int y = 0; y < artistTracks.size(); y++) {
+                Track track1 = artistTracks.get(y);
+                Button trackButton = new Button(track1.getName());
+                trackButton.setOnAction(e -> playTrack(track1.getName()));
+                trackButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: bold;");
+                // Imagem do botão:
+                Image trackCover = new Image(imagespath + "covers/" + track1.getAlbum() + ".jpeg");
+                ImageView trackCoverView = new ImageView(trackCover);
+                trackCoverView.setFitWidth(30);
+                trackCoverView.setFitHeight(30);
+                trackButton.setGraphic(trackCoverView);
+
+                firstSongs.getChildren().add(trackButton);
+            }
+            artistLayout.getChildren().add(firstSongsSP);
+            artistLayout.getChildren().add(backButton);
         }
 
-        for (Track track : trackList.getTracks()) {
-            //if (track.getName().equalsIgnoreCase(trackName)) {
-                // Construa o caminho para o arquivo de áudio
-                String filePath = "C:/Users/Robson/Music/" + track.getAlbum() + "/" + track.getName() + ".mp3";
-                File file = new File(filePath);
+        Stage artistStage = new Stage();
+        Scene scene = new Scene(artistLayout,300,300);
+        artistStage.setScene(scene);
+        artistStage.show();
+        backButton.setOnAction(e -> artistStage.close());
 
-                // Caminho para a imagem do álbum
-                String imagePath = "C:/Users/Robson/Pictures/Covers/" + track.getAlbum() + ".jpeg";
-                File imageFile = new File(imagePath);
-
-                if (file.exists() || imageFile.exists()) {
-                    // Cria o objeto Media e MediaPlayer
-                    Media media = new Media(file.toURI().toString());
-                    mediaPlayer = new MediaPlayer(media);
-
-                    // Label para as informações da faixa:
-                    Label songInfoLabel = new Label("\n\n" + track.getName() + "\n" + track.getArtist());
-                    songInfoLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
-
-                    // Botões Play e Pause
-                    Button playButton = new Button("\u23F5");
-                    playButton.setOnAction(e -> mediaPlayer.play());
-                    Button pauseButton = new Button("\u23F8");
-                    pauseButton.setOnAction(e -> mediaPlayer.pause());
-                    Button stopButton = new Button("\u23F9");
-                    stopButton.setOnAction(e -> mediaPlayer.stop());
-
-                    Button backButton = new Button("Back");
-                    backButton.setStyle("-fx-padding: 5px 10px; -fx-background-color: #006400; -fx-text-fill: white; -fx-alignment: center-left;");
-
-                    // Imagem do álbum
-                    Image image = new Image(imageFile.toURI().toString());
-                    ImageView imageView = new ImageView(image);
-                    imageView.setFitWidth(200);
-                    imageView.setFitHeight(200);
-                    imageView.setStyle("-fx-alignment: center;");
-
-
-
-                }
-           // }
-        }return new HBox(10);
     }
 
+    private void showAllArtists(Stage stage){
+        VBox list = new VBox(10);
+        ScrollPane fullList = new ScrollPane(list);
+        fullList.setFitToWidth(true);
+
+        Button backButton = new Button(" Back ");
+        backButton.setStyle("-fx-padding: 10px 20px; -fx-background-color: #006400; -fx-text-fill: white;");
+        backButton.setOnAction(e -> showLibrary(stage));
+
+        for (String artist: trackList.getArtistsNames()) {
+            Button artistButton = new Button(artist + "\n" + trackList.countArtistSongs(artist) + " songs, " + trackList.searchArtistAlbums(artist).size() + " albums");
+            Image artistFile = new Image(imagespath + "/artists/" + artist + ".jpeg");
+            ImageView artistImage = new ImageView(artistFile);
+            artistImage.setFitWidth(50);
+            artistImage.setFitHeight(50);
+            artistButton.setGraphic(artistImage);
+            artistButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: bold;");
+            artistButton.setOnAction(e-> showArtistPage(artist));
+            list.getChildren().add(artistButton);
+        }
+        VBox artistsLayout = new VBox(10);
+        artistsLayout.getChildren().add(fullList);
+        artistsLayout.getChildren().add(backButton);
+        Scene scene = new Scene(artistsLayout,300,300);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     // Método para formatar o tempo
     private String formatTime(Duration elapsed, Duration duration) {
@@ -525,8 +544,6 @@ public class PlayerFXcss extends Application {
         Button backButton = new Button(" Back ");
         backButton.setStyle("-fx-padding: 10px 20px; -fx-background-color: #006400; -fx-text-fill: white;");
 
-        String info = "";
-
         // Ações do botões:
         backButton.setOnAction(e -> showLibrary(stage));
 
@@ -534,43 +551,35 @@ public class PlayerFXcss extends Application {
 
         VBox ListLayout = new VBox(15);
 
+
         if (albumsList.getAlbums() != null) {
             for (Album album: albumsList.getAlbums()) {
 
-                    Button albumButton = new Button(album.getTitle() + "\n" + album.getArtist());
-                    albumButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: bold;");
+                Button albumButton = new Button(album.getTitle() + "\n" + album.getArtist());
+                albumButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: bold;");
 
-                    // Criando a capa do álbum:
-                    String imagePath = "C:/Users/Robson/Pictures/Covers/" + album.getTitle() + ".jpeg";
-                    File imageFile = new File(imagePath);
+                // Criando a capa do álbum:
 
-                    if (imageFile.exists()) {
-                        System.out.println("A capa do album para search foi encontrada");
-                        //Imagem do álbum
-                        Image image = new Image(imageFile.toURI().toString());
-                        ImageView imageView = new ImageView(image);
-                        imageView.setFitWidth(50);
-                        imageView.setFitHeight(50);
+                System.out.println("A capa do album para search foi encontrada");
+                //Imagem do álbum
+                Image image = new Image(imagespath + "covers/" + album.getTitle() + ".jpeg");
+                ImageView imageView = new ImageView(image);
+                imageView.setFitWidth(50);
+                imageView.setFitHeight(50);
 
-                        albumButton.setGraphic(imageView);
-                    } else {
-                        System.out.println("Erro: a capa do album para search foi encontrada");
-                    }
-                    albumButton.setOnAction(e -> showAlbumPage(album.getTitle(),stage));
-                    ListOfAlbumsButtons.getChildren().add(albumButton);
+                albumButton.setGraphic(imageView);
+                albumButton.setOnAction(e -> showAlbumPage(album.getTitle(),stage));
+                ListOfAlbumsButtons.getChildren().add(albumButton);
             }
             ScrollPane scrollAlbums = new ScrollPane(ListOfAlbumsButtons);
             scrollAlbums.setFitToWidth(true);
 
             ListLayout.getChildren().add(scrollAlbums);
             ListLayout.getChildren().add(backButton);
-
         } else {
-
-            Label infoLabel = new Label(info = "A lista da Álbums baixados está vazia");
+            Label infoLabel = new Label("A lista da Álbums baixados está vazia");
             infoLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
             ListOfAlbumsButtons.getChildren().add(infoLabel);
-
         }
         ListOfAlbumsButtons.setStyle("--fx-padding: 20px;");
 
