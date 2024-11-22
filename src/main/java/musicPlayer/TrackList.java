@@ -2,6 +2,7 @@ package musicPlayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -170,13 +171,13 @@ public class TrackList {
         return finalString;
     }
 
-    public String lastAddedSongs() {
-        //Este método apenas pega um quantidade de faixas para exibir seus títulos na página incial;
-        String listN = "";
-        for (int k=0; k<5; k++){
-            listN += "~"+this.tracks.get(k).toString();
-
-        } return listN;
+    public List<Track> lastPlayedSongs() { //Este método pega um quantidade de faixas para exibir seus títulos na página incial;
+        List<Track> lastTracks = new ArrayList<>();
+        Collections.shuffle(this.tracks);
+        for (int k = 0; k < 4; k++){
+            lastTracks.add(this.tracks.get(k));
+        }
+        return lastTracks;
     }
 
     public int countArtistSongs(String artistName) {

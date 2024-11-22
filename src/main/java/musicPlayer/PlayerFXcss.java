@@ -40,10 +40,10 @@ public class PlayerFXcss extends Application {
         Label wecomeInfo = new Label("Bem-vindo,\n" + username + "!");
         wecomeInfo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        Label info1 = new Label("Tocadas recentemente:  ====\n\n"+trackList.lastAddedSongs()+"\n=============================");
+        Label info1 = new Label("Tocadas recentemente:  ==========");
         info1.setStyle("-fx-font-size: 12px; -fx-font-weight: bold;");
 
-        Image image = new Image(imagespath + "profile/profilepic.jpeg"); //--> imagem anexada no projeto
+        Image image = new Image(imagespath + "profile/profile.jpg"); //--> imagem anexada no projeto
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(50);  // Largura da imagem
         imageView.setFitHeight(50);
@@ -61,11 +61,29 @@ public class PlayerFXcss extends Application {
         HBox header = new HBox(100,wecomeInfo, profile);
         HBox buttons = new HBox(30, libraryButton, exitButton);
         buttons.setStyle("-fx-alignment: center;");
+        VBox lastTracks = new VBox(10);
+        ScrollPane lastTracksScroll = new ScrollPane(lastTracks);
+        lastTracksScroll.setFitToWidth(true);
 
-        VBox layout = new VBox(30, header, info1, buttons);
+        VBox layout = new VBox(5, header, info1, lastTracksScroll,buttons);
         layout.setStyle("-fx-padding: 20px;");
 
-        Scene scene1 = new Scene(layout, 300, 300);
+        // Adicionando tracks recentes no início:
+        if (trackList.getTracks() != null) {
+            for (Track track: trackList.lastPlayedSongs()) {
+                Button trackButton = new Button(track.getName() + "\nby "+track.getArtist());
+                trackButton.setOnAction(e -> playTrack(track.getName()));
+                trackButton.setStyle("-fx-font-size: 12px; -fx-background-color: white; -fx-font-weight: bold;");
+                // Imagem do botão:
+                Image trackCover = new Image(imagespath + "covers/" + track.getAlbum() + ".jpeg");
+                ImageView trackCoverView = new ImageView(trackCover);
+                trackCoverView.setFitWidth(30);
+                trackCoverView.setFitHeight(30);
+                trackButton.setGraphic(trackCoverView);
+                lastTracks.getChildren().add(trackButton);}
+        }
+
+        Scene scene1 = new Scene(layout,300,300);
         primaryStage.setTitle("MusicPlayer");
         primaryStage.setScene(scene1);
         primaryStage.show();
@@ -122,6 +140,7 @@ public class PlayerFXcss extends Application {
 
         Scene libraryScene = new Scene(libraryLayout, 300,300);
         primaryStage.setScene(libraryScene);
+        primaryStage.setTitle("Biblioteca");
 
         // Dando ações aos botões:
         backButton.setOnAction(e -> {
@@ -143,12 +162,12 @@ public class PlayerFXcss extends Application {
 
         albumsButton.setOnAction(e -> showAllAlbumListButtons(primaryStage));
 
-        songsButton.setOnAction(e -> songsScroller(trackList.getTracks()));
+        songsButton.setOnAction(e -> showAllSongs(trackList.getTracks()));
 
         artistsButton.setOnAction(e-> showAllArtists(primaryStage));
     }
 
-    private void songsScroller (List<Track> tracks){
+    private void showAllSongs(List<Track> tracks){
 
         VBox songs = new VBox(10);
         VBox songsLayout = new VBox(10);
@@ -187,6 +206,7 @@ public class PlayerFXcss extends Application {
 
         Scene scene = new Scene(songsLayout,300,300);
         Stage stage = new Stage();
+        stage.setTitle("Músicas");
         back.setOnAction(e -> stage.close());
 
         stage.setScene(scene);
@@ -267,7 +287,7 @@ public class PlayerFXcss extends Application {
         Button backButton = new Button(" Back ");
         backButton.setStyle("-fx-padding: 10px 20px; -fx-background-color: #006400; -fx-text-fill: white;");
 
-
+        String albumTitleScene = "";
         if (albumsList != null) {
 
             for (Album album2 : albumsList.getAlbums()) {
@@ -295,6 +315,7 @@ public class PlayerFXcss extends Application {
 
                     albumLayout.getChildren().add(coverTitleArtist);
                     albumLayout.getChildren().add(scrollTracks);
+                    albumTitleScene = album2.getTitle();
                     break;
                 }
             }
@@ -303,6 +324,7 @@ public class PlayerFXcss extends Application {
         Scene albumPage = new Scene(albumLayout,300,300);
         backButton.setOnAction(e -> albumPageStage.close());
         albumPageStage.setScene(albumPage);
+        albumPageStage.setTitle("Álbum: " + albumTitleScene);
         albumPageStage.show();
     }
 
@@ -407,10 +429,11 @@ public class PlayerFXcss extends Application {
 
 
                     // Configura a cena e exibe o player
-                    Scene scene = new Scene(root, 300, 300);
+                    Scene scene = new Scene(root, 300,300);
                     playBack.setScene(scene);
+                    playBack.setTitle(track.getArtist() + " - " + track.getName());
 
-                    backButton.setOnAction(e-> {mediaPlayer.stop(); playBack.close();});
+                    backButton.setOnAction(e-> {playBack.close();});
 
                     playBack.show();
                     // Inicia a reprodução da faixa
@@ -433,12 +456,11 @@ public class PlayerFXcss extends Application {
         HBox info = new HBox(10);
         VBox artistLayout = new VBox(10);
         artistLayout.getChildren().add(info);
+        String artistNameScene = "";
 
         if (trackList.getTracks() != null) {
             for (String artist: trackList.getArtistsNames()) {
-
                 int cont = trackList.countArtistSongs(artist);
-
                 if (artist.toLowerCase().startsWith(artistName.toLowerCase())) {
 
                     VBox infoNameXsongs = new VBox(5);
@@ -454,15 +476,20 @@ public class PlayerFXcss extends Application {
                     ImageView artistImage = new ImageView(artistFile);
                     artistImage.setFitWidth(100);
                     artistImage.setFitHeight(100);
+
                     info.getChildren().add(artistImage);
                     info.getChildren().add(infoNameXsongs);
+
+                    artistNameScene = artist;
                 }
-            } List<Track> artistTracks = trackList.searchArtistSongs(artistName);
+            }
+            List<Track> artistTracks = trackList.searchArtistSongs(artistName);
             Collections.shuffle(artistTracks);
 
             VBox firstSongs = new VBox(5);
             ScrollPane firstSongsSP = new ScrollPane(firstSongs);
             firstSongsSP.setFitToWidth(true);
+
             for (int y = 0; y < artistTracks.size(); y++) {
                 Track track1 = artistTracks.get(y);
                 Button trackButton = new Button(track1.getName());
@@ -482,10 +509,12 @@ public class PlayerFXcss extends Application {
         }
 
         Stage artistStage = new Stage();
+        backButton.setOnAction(e -> artistStage.close());
         Scene scene = new Scene(artistLayout,300,300);
         artistStage.setScene(scene);
+        artistStage.setTitle("Artista: " + artistNameScene);
         artistStage.show();
-        backButton.setOnAction(e -> artistStage.close());
+
 
     }
 
@@ -514,6 +543,7 @@ public class PlayerFXcss extends Application {
         artistsLayout.getChildren().add(backButton);
         Scene scene = new Scene(artistsLayout,300,300);
         stage.setScene(scene);
+        stage.setTitle("Artistas");
         stage.show();
     }
 
@@ -536,7 +566,6 @@ public class PlayerFXcss extends Application {
         }
     }
 
-
     //todo: lista todos os álbuns baixados em forma de botões:
     private void showAllAlbumListButtons(Stage stage) {
 
@@ -547,9 +576,7 @@ public class PlayerFXcss extends Application {
         backButton.setOnAction(e -> showLibrary(stage));
 
         VBox ListOfAlbumsButtons = new VBox(10);
-
         VBox ListLayout = new VBox(15);
-
 
         if (albumsList.getAlbums() != null) {
             for (Album album: albumsList.getAlbums()) {
@@ -559,7 +586,7 @@ public class PlayerFXcss extends Application {
 
                 // Criando a capa do álbum:
 
-                System.out.println("A capa do album para search foi encontrada");
+                System.out.println("A capa do album para "+ album.getTitle() + " foi encontrada");
                 //Imagem do álbum
                 Image image = new Image(imagespath + "covers/" + album.getTitle() + ".jpeg");
                 ImageView imageView = new ImageView(image);
@@ -583,7 +610,7 @@ public class PlayerFXcss extends Application {
         ListOfAlbumsButtons.setStyle("--fx-padding: 20px;");
 
         Scene scene = new Scene(ListLayout,300,300);
-        stage.setTitle("Albums downloaded");
+        stage.setTitle("Álbuns");
         stage.setScene(scene);
     }
 
@@ -619,6 +646,7 @@ public class PlayerFXcss extends Application {
 
         Scene scene = new Scene(profileLayout, 300,300);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("Perfil");
 
         // todo Buttons actions:
         back.setOnAction(e -> {

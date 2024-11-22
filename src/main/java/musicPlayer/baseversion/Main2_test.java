@@ -43,7 +43,7 @@ public class Main2_test {
                     "=========================| MusicPlayer |=========================\nWelcome Back, "+username+"!\n" +
                             "                                                                                                            (1) YOUR LIBRARY\n" +
                             "                                                                                                            (2) EXIT\n" +
-                            "\nLast added tracks: ==============================================\n\n" + trackList.lastAddedSongs()));
+                            "\nLast added tracks: ==============================================\n\n"));
 
             switch (i) {
                 case 1:
