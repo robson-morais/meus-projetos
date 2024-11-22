@@ -7,7 +7,7 @@ Ao iniciar a aplicação, é mostrado:
 - um botão com a imagem também personalizável do usuário que o leva para as configurações do perfil;
 - uma lista de músicas aleatórias simulando as últimas reproduções;
 - botões para exibir a biblioteca e fechar o programa.
-  <img height="50" src="PlayerFXcss/resources/images/artists/Ed Sheeran.jpeg" width="50"/>;
+  <img height="50" src="PlayerFXcss/src/main/resources/images/artists/Ed Sheeran.jpeg" width="50"/>;
 
 Na biblioteca há:
 - Uma barra de pesquisa que serve para encontrar faixas, álbuns e artistas;
